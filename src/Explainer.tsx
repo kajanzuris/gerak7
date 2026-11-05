@@ -3,7 +3,7 @@
 // blocks (tampilan tiap blok), themes (judul/caption/latar per tema), mascots, scenery.
 import { AbsoluteFill, Audio, spring, staticFile, useCurrentFrame, useVideoConfig } from "remotion";
 import React from "react";
-import { BG_PRESETS, C, CLASSIC_BGS, CLASSIC_PROPS, FONT, HUD_CYAN, HUD_VARS, LAYOUT, NEON_VARS, TD, TRANS, TUT_VARS, bgStyle, classicVars, easeIO, popDefaultY, transPair } from "./parts/config";
+import { BG_PRESETS, C, CAP_LIFT, CLASSIC_BGS, CLASSIC_PROPS, FONT, HUD_CYAN, HUD_VARS, LAYOUT, NEON_VARS, TD, TRANS, TUT_VARS, bgStyle, classicVars, easeIO, popDefaultY, stageGeo, transPair } from "./parts/config";
 import type { ThemeName } from "./parts/config";
 import { Bg, Prop } from "./parts/scenery";
 import { Block, HoloRing, OrbMascot, SpriteMascot, Stick } from "./parts/mascots";
@@ -29,6 +29,14 @@ export const Explainer: React.FC<StoryProps> = ({ name, data: d }) => {
   const themeName: ThemeName = hud ? "hud" : classic ? "classic" : tut ? "tutorial" : neon ? "neon" : "clean";
   const L = LAYOUT[themeName]; // semua angka posisi/ukuran per tema ada di parts/config.ts (LAYOUT)
   const accent = data.accent || (hud ? HUD_CYAN : classic ? "#FFD700" : tut ? "#ff5a1f" : neon ? "#ff3f8e" : C.red);
+
+  // Sumber teks di layar (agar kalimat tidak tampil dua kali):
+  //   clean            : judul besar (Headline) saja
+  //   neon / classic   : caption saja (tidak pernah memakai Headline)
+  //   hud / tutorial   : bawaan "caption"; bisa diubah lewat "textMode" di scenes.src.json: "headline" | "caption" | "both"
+  //                      (adegan tanpa kartu/gambar selalu memakai judul besar, caption disembunyikan)
+  const tm = data.textMode;
+  const textMode: "headline" | "caption" | "both" = hud || tut ? (tm === "headline" || tm === "both" || tm === "caption" ? tm : "caption") : "headline";
 
   let idx = 0;
   data.scenes.forEach((s, i) => { if (t >= s.start - 1e-6) idx = i; });
@@ -88,6 +96,15 @@ export const Explainer: React.FC<StoryProps> = ({ name, data: d }) => {
   const cstyle = data.charStyle || "block";
   const poseName = sc.pose || "idle";
 
+  // ---- tema neon: maskot orb besar (hook / tanpa kartu) atau kecil (di bawah kartu), berpindah halus ----
+  const orbFor = (i: number) => {
+    const sn = data.scenes[i];
+    const hasChar = !!sn.mascot && data.char !== "plain";
+    const hide = sn.orb === "hide" || hasChar || !!sn.stage?.some((b) => b.type === "brand");
+    const big = sn.orb ? sn.orb === "big" : !(sn.stage && sn.stage.length) || (sn.stage.length === 1 && sn.stage[0].type === "chip");
+    return { hide, big, y: big ? 900 : 1620, sc: big ? 1.15 : 0.62 };
+  };
+
   // satu lapisan adegan (judul + blok visual); dipakai dua kali saat transisi (adegan lama + baru)
   const layer = (i: number, wrap: React.CSSProperties) => {
     const s = data.scenes[i];
@@ -97,10 +114,15 @@ export const Explainer: React.FC<StoryProps> = ({ name, data: d }) => {
     const sm = (s.small ?? 0) <= 3 && (s.small ?? 0) <= wsI.length - 2 ? s.small ?? 0 : 0;
     const hm = !!s.mascot;
     const p = presetFor(i);
+    const hasImg = (s.stage || []).some((b) => b.type === "image");
+    const showHead = !(classic || neon) && (textMode !== "caption" || solo); // judul besar
+    const lift = (hud || tut) && textMode === "caption" && !solo ? (CAP_LIFT[themeName] ?? 0) : 0; // judul hilang: stage naik
+    const centerCards = neon && !hm && !solo && !hasImg && !orbFor(i).big; // neon: kartu di tengah ruang kosong
+    const geo = stageGeo(themeName, { mascot: hm, shift: L.shiftWhenNoHeader ? dy : 0, lift, centerCards });
     return (
       <Ctx.Provider key={"L" + i} value={{ ws: wsI, base: s.start, t, accent, name, ink: data.textColor || (hud || neon ? "#ffffff" : tut ? "#1a0e08" : p.ink), mute: data.textColor || (hud ? "#9fb3d1" : classic ? "#c4c9d8" : neon ? "#b9a8c9" : tut ? "#5a2a14" : p.mute), theme: themeName, hl: tut ? "#ffffff" : undefined }}>
         <div style={{ position: "absolute", left: 0, top: 0, width: 1080, height: 1920, ...wrap }}>
-          {classic || neon ? null : (
+          {!showHead ? null : (
             <div style={{ position: "absolute", left: 50, right: 50, top: solo ? 460 : L.headTop + (L.shiftWhenNoHeader ? dy : 0), height: solo ? 520 : 300, display: "flex", flexDirection: "column", justifyContent: "center", alignItems: "center", gap: 10, textAlign: "center" }}>
               <Headline ws={wsI} small={sm} solo={solo} />
             </div>
@@ -108,13 +130,13 @@ export const Explainer: React.FC<StoryProps> = ({ name, data: d }) => {
           {classic && s.prop && CLASSIC_PROPS.includes(s.prop) && typeof Prop !== "undefined" ? (
             <Prop kind={s.prop} f={frame} lf={Math.max(0, frame - Math.round(s.start * fps))} hx={s.mascot === "left" ? 300 : s.mascot === "right" ? 780 : 540} accent={accent} />
           ) : null}
-          <div style={{ position: "absolute", left: 60, right: 60, top: (hm ? L.stageTopM : L.stageTop) + (L.shiftWhenNoHeader ? dy : 0), bottom: hm ? L.stageBottomM : L.stageBottom, display: "flex", flexDirection: "column", justifyContent: L.stageAlign, gap: L.stageGap }}>
+          <div style={{ position: "absolute", left: 60, right: 60, top: geo.top, bottom: geo.bottomGap, display: "flex", flexDirection: "column", justifyContent: geo.align, gap: L.stageGap }}>
             {(s.stage || []).map((b, bi) => <StageItem key={bi} b={b} i={bi} />)}
           </div>
           {s.pops && s.pops.length ? (
             <PopLayer
               pops={s.pops}
-              defaultY={popDefaultY(s.stage || [], themeName, hm, L.shiftWhenNoHeader ? dy : 0, s.pops.length)}
+              defaultY={popDefaultY(s.stage || [], themeName, geo, s.pops.length)}
             />
           ) : null}
         </div>
@@ -129,14 +151,6 @@ export const Explainer: React.FC<StoryProps> = ({ name, data: d }) => {
     while (si > 0 && data.scenes[si - 1].step === sc.step) si--;
     stepStart = data.scenes[si].start;
   }
-  // ---- tema neon: maskot orb besar (hook / tanpa kartu) atau kecil (di bawah kartu), berpindah halus ----
-  const orbFor = (i: number) => {
-    const sn = data.scenes[i];
-    const hasChar = !!sn.mascot && data.char !== "plain";
-    const hide = sn.orb === "hide" || hasChar || !!sn.stage?.some((b) => b.type === "brand");
-    const big = sn.orb ? sn.orb === "big" : !(sn.stage && sn.stage.length) || (sn.stage.length === 1 && sn.stage[0].type === "chip");
-    return { hide, y: big ? 900 : 1620, sc: big ? 1.15 : 0.62 };
-  };
   const oc = orbFor(idx);
   const opv = idx > 0 ? orbFor(idx - 1) : oc;
   const ok = idx > 0 ? easeIO(clamp01((t - base) / 0.5)) : 1;
@@ -146,6 +160,8 @@ export const Explainer: React.FC<StoryProps> = ({ name, data: d }) => {
   const floorOp = idx > 0 && opv.hide && !oc.hide ? 1 - ok : oc.hide ? (idx > 0 && opv.hide ? 1 : ok) : 0;
 
   const prevPreset = idx > 0 ? presetFor(idx - 1) : preset;
+  // caption hud/tutorial: tampil bila mode "both", atau mode "caption" dan adegan punya kartu/gambar
+  const showCaption = textMode === "both" || (textMode === "caption" && !!(sc.stage && sc.stage.length));
 
   return (
     <AbsoluteFill style={{ ...(hud ? { backgroundColor: "#030a1a", ...HUD_VARS } : classic ? { backgroundColor: "#000", ...classicVars(accent) } : tut ? { backgroundColor: "#d9480f", ...TUT_VARS } : neon ? { backgroundColor: "#07020f", ...NEON_VARS } : bgStyle(preset)), fontFamily: FONT, color: ink }}>
@@ -186,8 +202,8 @@ export const Explainer: React.FC<StoryProps> = ({ name, data: d }) => {
       ) : null}
       {neon && orbVis > 0.01 ? <OrbMascot x={540} y={orbY} s={orbS} f={frame} talk={talk ?? 0} op={orbVis} /> : null}
       {tut && sc.step && data.header !== false ? <StepBadge step={sc.step} label={data.stepLabel || "Langkah"} t0={stepStart} /> : null}
-      {hud ? <HudCaption words={data.words || []} t={t} accent={accent} /> : null}
-      {tut ? <TutCaption words={data.words || []} t={t} /> : null}
+      {hud && showCaption ? <HudCaption words={data.words || []} t={t} accent={accent} /> : null}
+      {tut && showCaption ? <TutCaption words={data.words || []} t={t} /> : null}
       {neon ? <NeonCaption words={data.words || []} t={t} accent={accent} /> : null}
       {tut && data.handle && data.header !== false ? <HandleTag text={data.handle} /> : null}
       {classic ? <ClassicCaption words={data.words || []} t={t} accent={accent} /> : null}
