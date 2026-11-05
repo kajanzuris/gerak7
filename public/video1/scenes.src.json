@@ -1,0 +1,203 @@
+{
+  "style": "explainer",
+  "tag": "Tips & Trik",
+  "scenes": [
+    {
+      "title": "*Capek* itu *wajar* kok, yang nggak wajar tuh kalau kamu ngerasa",
+      "start": 0,
+      "small": 1,
+      "stage": [
+        {
+          "type": "image",
+          "src": "img/img01.png",
+          "h": 960
+        }
+      ],
+      "pops": [
+        {
+          "word": "Capek",
+          "glyph": "😩",
+          "anim": "drop",
+          "x": 920,
+          "s": 0.85,
+          "object": "a tired exhausted face",
+          "img": "pics/pop01.png"
+        }
+      ]
+    },
+    {
+      "title": "*semuanya* *harus* sempurna dulu.",
+      "start": 4.3,
+      "small": 0,
+      "stage": [
+        {
+          "type": "image",
+          "src": "img/img02.png",
+          "h": 960
+        }
+      ]
+    },
+    {
+      "title": "*Jari* kamu sampai *gemetar* di atas layar,",
+      "start": 6.1,
+      "small": 1,
+      "stage": [
+        {
+          "type": "image",
+          "src": "img/img03.png",
+          "h": 960
+        }
+      ]
+    },
+    {
+      "title": "*terus* *hapus* caption yang udah ditulis berkali -kali.",
+      "start": 8.6,
+      "small": 1,
+      "stage": [
+        {
+          "type": "image",
+          "src": "img/img04.png",
+          "h": 960
+        }
+      ]
+    },
+    {
+      "title": "Kamu *nunggu* *dunia* siap, padahal sebenarnya dunia cuma butuh",
+      "start": 11.9,
+      "small": 1,
+      "pose": "thumbs",
+      "mascot": "left",
+      "stage": []
+    },
+    {
+      "title": "*kejujuran* kamu aja loh.",
+      "start": 15.7,
+      "small": 0,
+      "stage": [
+        {
+          "type": "image",
+          "src": "img/img05.png",
+          "h": 960
+        }
+      ]
+    },
+    {
+      "title": "*Sempurna* itu *cuma* jebakan,",
+      "start": 17.6,
+      "small": 0,
+      "stage": [
+        {
+          "type": "image",
+          "src": "img/img06.png",
+          "h": 960
+        }
+      ]
+    },
+    {
+      "title": "*mulai* aja *dulu,* meskipun tangan kamu masih terasa dingin.",
+      "start": 19.3,
+      "small": 1,
+      "stage": [
+        {
+          "type": "image",
+          "src": "img/img07.png",
+          "h": 960
+        }
+      ],
+      "pops": [
+        {
+          "word": "mulai",
+          "glyph": "🚀",
+          "anim": "slide-right",
+          "x": 170,
+          "s": 0.95,
+          "object": "a rocket flying upward",
+          "img": "pics/pop02.png"
+        }
+      ]
+    },
+    {
+      "title": "Coba deh *kirim* *pesan* ini ke temen kamu yang masih ragu buat",
+      "start": 23,
+      "small": 1,
+      "pose": "cheer",
+      "mascot": "left",
+      "stage": [
+        {
+          "type": "notifs",
+          "notifs": [
+            {
+              "text": "Catatan Penting",
+              "sub": "Coba deh kirim pesan",
+              "icon": "💡"
+            }
+          ]
+        }
+      ],
+      "pops": [
+        {
+          "word": "pesan",
+          "glyph": "💬",
+          "anim": "pop",
+          "x": 910,
+          "s": 0.9,
+          "object": "a speech bubble",
+          "img": "pics/pop03.png"
+        },
+        {
+          "word": "temen",
+          "glyph": "🤝",
+          "anim": "pop",
+          "x": 170,
+          "s": 0.95,
+          "object": "two hands shaking",
+          "img": "pics/pop04.png"
+        },
+        {
+          "word": "ragu",
+          "glyph": "🤔",
+          "anim": "pop",
+          "x": 900,
+          "s": 0.8,
+          "object": "a thinking face with a hand on the chin",
+          "img": "pics/pop05.png"
+        }
+      ]
+    },
+    {
+      "title": "*melangkah.*",
+      "start": 26.1,
+      "small": 0,
+      "pose": "thumbs",
+      "mascot": "left",
+      "stage": []
+    }
+  ],
+  "header": true,
+  "accent": "#e5252a",
+  "char": "girl",
+  "charColor": "#222222",
+  "cta": "Link-nya di bio",
+  "charStyle": "block",
+  "transitions": [
+    "fade",
+    "slide-left",
+    "slide-up",
+    "zoom"
+  ],
+  "transitionsMode": "cycle",
+  "backgrounds": [
+    "cream",
+    "mint",
+    "sunset",
+    "grid"
+  ],
+  "bgMode": "single",
+  "bgEvery": 1,
+  "theme": "clean",
+  "audio": {
+    "music": true,
+    "sfx": true,
+    "blockSfx": true
+  }
+}
