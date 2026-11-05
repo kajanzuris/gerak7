@@ -67,6 +67,7 @@ export type Scene = { title: string; start: number; small?: number; pose?: strin
 export type Data = {
   durationInFrames: number;
   theme?: "clean" | "hud" | "classic" | "tutorial" | "neon";
+  textMode?: "headline" | "caption" | "both"; // hud/tutorial: judul besar di atas, caption di bawah, atau keduanya (bawaan: caption)
   brand?: string;
   tag?: string;
   accent?: string;
