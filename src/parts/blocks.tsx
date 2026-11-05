@@ -1,4 +1,6 @@
 // BLOK VISUAL: tampilan tiap jenis blok di "stage" (window, compare, image, stat, ...). StageItem memilih blok mana.
+// Catatan ukuran teks: tidak ada teks isi di bawah ~22px (layar 1080px lebar). Bila mengubah ukuran font/padding di sini,
+// sesuaikan juga estBlockH() di config.ts (perkiraan tinggi blok untuk posisi "pops").
 
 import { Img, staticFile } from "remotion";
 import React from "react";
@@ -119,7 +121,7 @@ export const CompareView: React.FC<{ b: Item; t0: number }> = ({ b, t0 }) => (
             <div style={{ padding: 22, display: "flex", flexDirection: "column", gap: 14 }}>
               {c.items.map((it, k) => (
                 <Appear key={k} t0={t0 + ci * 0.25 + 0.4 + k * 0.3}>
-                  <div style={{ background: `${tone}22`, borderRadius: 18, padding: "14px 18px", fontSize: 26, fontWeight: 600 }}>{it}</div>
+                  <div style={{ background: `${tone}22`, borderRadius: 18, padding: "14px 18px", fontSize: 30, fontWeight: 600 }}>{it}</div>
                 </Appear>
               ))}
             </div>
@@ -152,7 +154,7 @@ export const TreeView: React.FC<{ b: Item; t0: number }> = ({ b, t0 }) => (
           <>
             <div style={{ width: 3, height: 26, background: V.cardLine }} />
             <Appear t0={t0 + 1.0 + i * 0.15} style={{ width: "100%" }}>
-              <div style={{ ...card, borderRadius: 18, padding: "14px 0", textAlign: "center", fontWeight: 600, fontSize: 26 }}>{c.low}</div>
+              <div style={{ ...card, borderRadius: 18, padding: "14px 0", textAlign: "center", fontWeight: 600, fontSize: 30 }}>{c.low}</div>
             </Appear>
           </>
         ) : null}
@@ -180,7 +182,7 @@ export const DialogView: React.FC<{ b: Item; t0: number }> = ({ b, t0 }) => (
           <Trash />
         </div>
         {b.sub ? (
-          <div style={{ fontSize: 22, color: V.mute }}>
+          <div style={{ fontSize: 28, color: V.mute }}>
             <Typewriter text={b.sub} t0={t0} delay={0.6} speed={30} />
           </div>
         ) : null}
@@ -192,16 +194,18 @@ export const DialogView: React.FC<{ b: Item; t0: number }> = ({ b, t0 }) => (
   </Appear>
 );
 
+// Kartu penekanan. Isi sebaiknya kata kunci / ajakan BARU, bukan salinan kalimat (itu sudah tampil sebagai judul/caption).
+// Tinggi baris diset eksplisit (title 1.2, sub 1.25) supaya perkiraan tinggi di config.ts (estBlockH) akurat.
 export const CalloutView: React.FC<{ b: Item; t0: number }> = ({ b, t0 }) => {
   const { accent } = React.useContext(Ctx);
   return (
     <Appear t0={t0}>
       <div style={{ ...card, padding: "48px 40px", textAlign: "center", background: V.callout }}>
-        <div style={{ fontSize: 64, fontWeight: 800, color: accent, letterSpacing: 1 }}>
+        <div style={{ fontSize: 64, fontWeight: 800, color: accent, letterSpacing: 1, lineHeight: 1.2 }}>
           <Typewriter text={b.title || ""} t0={t0} delay={0.2} speed={24} />
         </div>
         {b.sub ? (
-          <div style={{ fontSize: 28, color: V.mute, margin: "12px 0 28px" }}>
+          <div style={{ fontSize: 40, fontWeight: 600, lineHeight: 1.25, color: V.mute, margin: "12px 0 28px" }}>
             <Typewriter text={b.sub} t0={t0} delay={0.5} speed={30} />
           </div>
         ) : null}
@@ -309,7 +313,7 @@ export const MeterView: React.FC<{ b: Item; t0: number }> = ({ b, t0 }) => {
             <div key={i} style={{ flex: 1, height: 34, borderRadius: 6, background: i < filled ? accent : "rgba(128,128,128,.25)" }} />
           ))}
         </div>
-        {b.label ? <div style={{ fontSize: 24, color: V.mute, marginTop: 12 }}>{b.label}</div> : null}
+        {b.label ? <div style={{ fontSize: 30, color: V.mute, marginTop: 12 }}>{b.label}</div> : null}
       </div>
     </Appear>
   );
@@ -337,7 +341,7 @@ export const BarsView: React.FC<{ b: Item; t0: number }> = ({ b, t0 }) => {
           })}
         </div>
         <div style={{ display: "flex", gap: 14, marginTop: 10 }}>
-          {items.map((it, i) => <div key={i} style={{ flex: 1, textAlign: "center", fontSize: 22, color: V.mute, fontWeight: 600 }}>{it.label}</div>)}
+          {items.map((it, i) => <div key={i} style={{ flex: 1, textAlign: "center", fontSize: 26, color: V.mute, fontWeight: 600 }}>{it.label}</div>)}
         </div>
       </div>
     </Appear>
@@ -416,7 +420,7 @@ export const BrowserView: React.FC<{ b: Item; t0: number }> = ({ b, t0 }) => {
               ))}
             </div>
           ) : null}
-          {b.text ? <div style={{ background: "#1b1d24", color: "#e8eaf0", borderRadius: 14, padding: "20px 22px", fontFamily: MONO, fontSize: 24, lineHeight: 1.5, wordBreak: "break-all" }}>{b.text}</div> : null}
+          {b.text ? <div style={{ background: "#1b1d24", color: "#e8eaf0", borderRadius: 14, padding: "20px 22px", fontFamily: MONO, fontSize: 26, lineHeight: 1.5, wordBreak: "break-all" }}>{b.text}</div> : null}
           {b.cta ? <div style={{ display: "inline-block", marginTop: 18, background: "#16161a", color: "#fff", borderRadius: 10, padding: "10px 28px", fontSize: 24, fontWeight: 700, transform: press ? "scale(.92)" : "scale(1)" }}>{b.cta}</div> : null}
         </div>
       </div>
@@ -434,7 +438,7 @@ export const PhoneView: React.FC<{ b: Item; t0: number }> = ({ b, t0 }) => {
           <div style={{ width: 52, height: 52, borderRadius: 26, background: "#fff", color: "#5f87b0", display: "flex", alignItems: "center", justifyContent: "center", fontWeight: 800, fontSize: 26 }}>{(b.title || "B").slice(0, 1).toUpperCase()}</div>
           <div>
             <div style={{ fontSize: 26, fontWeight: 800 }}>{b.title}</div>
-            <div style={{ fontSize: 18, opacity: 0.8 }}>{b.sub || "bot"}</div>
+            <div style={{ fontSize: 22, opacity: 0.8 }}>{b.sub || "bot"}</div>
           </div>
         </div>
         <div style={{ flex: 1, padding: "18px 16px", display: "flex", flexDirection: "column", justifyContent: "flex-end", gap: 12 }}>
@@ -443,7 +447,7 @@ export const PhoneView: React.FC<{ b: Item; t0: number }> = ({ b, t0 }) => {
             return (
               <Appear key={i} t0={t0 + 0.5 + i * 0.7}>
                 <div style={{ display: "flex", justifyContent: user ? "flex-end" : "flex-start" }}>
-                  <div style={{ maxWidth: "82%", padding: "12px 18px", borderRadius: 20, background: user ? "#effdde" : "#ffffff", color: "#16161a", fontSize: 23, fontWeight: 600, lineHeight: 1.3 }}>{r.text}</div>
+                  <div style={{ maxWidth: "82%", padding: "12px 18px", borderRadius: 20, background: user ? "#effdde" : "#ffffff", color: "#16161a", fontSize: 26, fontWeight: 600, lineHeight: 1.3 }}>{r.text}</div>
                 </div>
               </Appear>
             );
@@ -468,12 +472,12 @@ export const ChipView: React.FC<{ b: Item; t0: number }> = ({ b, t0 }) => {
             <Typewriter text={b.title || ""} t0={t0} delay={0.22} speed={26} />
           </div>
           {b.sub ? (
-            <div style={{ fontSize: 24, color: V.mute, marginTop: 4 }}>
+            <div style={{ fontSize: 30, color: V.mute, marginTop: 4 }}>
               <Typewriter text={b.sub} t0={t0} delay={0.5} speed={30} />
             </div>
           ) : null}
         </div>
-        {b.tag ? <div style={{ border: `2px solid ${tone}`, color: tone, borderRadius: 30, padding: "6px 18px", fontSize: 22, fontWeight: 700 }}>{b.tag}</div> : null}
+        {b.tag ? <div style={{ border: `2px solid ${tone}`, color: tone, borderRadius: 30, padding: "6px 18px", fontSize: 26, fontWeight: 700 }}>{b.tag}</div> : null}
       </div>
     </Appear>
   );
@@ -495,7 +499,7 @@ export const TilesView: React.FC<{ b: Item; t0: number }> = ({ b, t0 }) => {
                 <IconTile glyph={c.tag} fallback={c.head.slice(0, 1)} tone={tone} size={62} />
                 <div style={{ minWidth: 0 }}>
                   <div style={{ fontSize: 32, fontWeight: 800, lineHeight: 1.1 }}>{c.head}</div>
-                  {c.mid ? <div style={{ fontSize: 20, color: V.mute, marginTop: 2 }}>{c.mid}</div> : null}
+                  {c.mid ? <div style={{ fontSize: 26, color: V.mute, marginTop: 2 }}>{c.mid}</div> : null}
                 </div>
               </div>
             </Appear>
@@ -512,9 +516,9 @@ export const KpiView: React.FC<{ b: Item; t0: number }> = ({ b, t0 }) => {
   const tone = b.tone || accent;
   const k = clamp01((t - t0 - 0.2) / 1.3);
   const val = b.value ? countText(b.value, k) : "";
-  const pill = b.tag ? <div style={{ marginLeft: "auto", background: tone, color: fgOn(tone), borderRadius: 30, padding: "5px 18px", fontSize: 21, fontWeight: 800 }}>{b.tag}</div> : null;
+  const pill = b.tag ? <div style={{ marginLeft: "auto", background: tone, color: fgOn(tone), borderRadius: 30, padding: "5px 18px", fontSize: 24, fontWeight: 800 }}>{b.tag}</div> : null;
   const head = (
-    <div style={{ display: "flex", alignItems: "center", gap: 14, fontSize: 26, fontWeight: 700 }}>
+    <div style={{ display: "flex", alignItems: "center", gap: 14, fontSize: 30, fontWeight: 700 }}>
       <IconTile glyph={b.icon} fallback={(b.title || "?").slice(0, 1)} tone={tone} size={46} />
       <span>{b.title}</span>
       {pill}
@@ -565,12 +569,12 @@ export const NotifsView: React.FC<{ b: Item; t0: number }> = ({ b, t0 }) => {
       {(b.notifs || []).slice(0, 4).map((n, i) => (
         <Appear key={i} t0={t0 + i * 0.55}>
           <div style={{ ...card, border: `2px solid ${tone}`, padding: "14px 20px", display: "flex", alignItems: "center", gap: 16 }}>
-            <IconTile glyph={n.icon} fallback={n.text.slice(0, 1)} tone={tone} size={42} />
+            <IconTile glyph={n.icon} fallback={n.text.slice(0, 1)} tone={tone} size={54} />
             <div style={{ flex: 1, minWidth: 0 }}>
-              <div style={{ fontSize: 26, fontWeight: 700, lineHeight: 1.15 }}>{n.text}</div>
-              {n.sub ? <div style={{ fontSize: 18, color: V.mute }}>{n.sub}</div> : null}
+              <div style={{ fontSize: 32, fontWeight: 700, lineHeight: 1.15 }}>{n.text}</div>
+              {n.sub ? <div style={{ fontSize: 26, color: V.mute }}>{n.sub}</div> : null}
             </div>
-            {n.value ? <div style={{ fontSize: 28, fontWeight: 800, color: tone }}>{n.value}</div> : null}
+            {n.value ? <div style={{ fontSize: 34, fontWeight: 800, color: tone }}>{n.value}</div> : null}
           </div>
         </Appear>
       ))}
@@ -617,7 +621,7 @@ export const ProfileView: React.FC<{ b: Item; t0: number }> = ({ b, t0 }) => {
               <Typewriter text={b.title || ""} t0={t0} delay={0.25} speed={26} />
             </div>
             {b.sub ? (
-              <div style={{ fontSize: 26, color: V.mute, marginTop: 6 }}>
+              <div style={{ fontSize: 32, color: V.mute, marginTop: 6 }}>
                 <Typewriter text={b.sub} t0={t0} delay={0.55} speed={30} />
               </div>
             ) : null}
