@@ -2,7 +2,7 @@
 
 import { loadFont } from "@remotion/google-fonts/Poppins";
 import React from "react";
-import type { Item } from "./types";
+import type { Item, Row } from "./types";
 
 // Tema "explainer": latar krem berbintik, header merek, judul 2 tingkat (kecil + besar) yang muncul per kata
 // mengikuti suara, blok UI (jendela chat, dialog, folder, perbandingan, pohon) di tengah, maskot di bawah.
@@ -176,58 +176,122 @@ export const LAYOUT: Record<ThemeName, ThemeLayout> = {
   neon:     { headTop: 190, stageTop: 170, stageTopM: 170, stageBottom: 700, stageBottomM: 700, feet: 1800, mScale: 0.62, mxLeft: 250, mxCenter: 540, mxRight: 830, shiftWhenNoHeader: false, stageAlign: "flex-start", stageGap: 18 },
 };
 
-// ================= POSISI DEFAULT "POPS" (objek pelengkap) =================
-// Dipakai bila sebuah pop tidak punya "y" di scenes.src.json. Tujuannya: pops tidak menimpa teks kartu.
+// ================= GEOMETRI STAGE & POSISI DEFAULT "POPS" =================
+// stageGeo() dipakai Explainer.tsx untuk area blok visual DAN untuk menghitung posisi pops, supaya keduanya selalu sepakat.
+
+export type StageGeo = { top: number; bottomGap: number; align: "center" | "flex-start" };
+
+// Tema hud/tutorial dengan textMode "caption": judul besar disembunyikan di adegan bergambar/kartu,
+// jadi area stage dinaikkan sebesar ini (px) agar tidak ada ruang kosong di atas.
+export const CAP_LIFT: Partial<Record<ThemeName, number>> = { hud: 320, tutorial: 280 };
+
+// Tema neon, adegan kartu (tanpa gambar, orb kecil): kartu dipusatkan antara y=170 dan caption (y=1290).
+const NEON_CARD_BOTTOM_GAP = 670;
+
+export const stageGeo = (
+  theme: ThemeName,
+  o: { mascot: boolean; shift: number; lift: number; centerCards: boolean },
+): StageGeo => {
+  const L = LAYOUT[theme];
+  const center = o.centerCards && theme === "neon";
+  return {
+    top: (o.mascot ? L.stageTopM : L.stageTop) + o.shift - o.lift,
+    bottomGap: center ? NEON_CARD_BOTTOM_GAP : o.mascot ? L.stageBottomM : L.stageBottom,
+    align: center ? "center" : L.stageAlign,
+  };
+};
+
+// Ukuran dasar pop (harus sama dengan SIZE di overlays.tsx)
+const POP_SIZE = 260;
 
 // Batas bawah pops per tema (di atas caption tema tersebut).
 export const POP_MAX_Y: Record<ThemeName, number> = {
   clean: 1780, hud: 1500, classic: 1480, tutorial: 1430, neon: 1270,
 };
 
-// Ukuran dasar pop (harus sama dengan SIZE di overlays.tsx)
-const POP_SIZE = 260;
+// jumlah baris perkiraan sebuah teks (lebar rata-rata huruf = avg x ukuran font)
+const wl = (txt: string | undefined, size: number, avg: number, width: number) =>
+  txt ? Math.max(1, Math.ceil((txt.length * size * avg) / width)) : 0;
 
-// Perkiraan tinggi (px) tiap blok stage. Angka ini perkiraan; setel bila pops masih terlalu dekat / jauh.
+// perkiraan tinggi satu baris pada blok "window"
+const rowH = (r: Row): number => {
+  switch (r.k) {
+    case "bubble": return 70;
+    case "check": return 66;
+    case "input": return 80;
+    case "note": return r.items && r.items.length ? 110 : 82;
+    case "buttons": return 70;
+    case "files": return r.groups && r.groups.length ? 113 : 185;
+    default: return 70;
+  }
+};
+
+// Perkiraan tinggi (px) tiap blok stage, dihitung dari ukuran font/padding di blocks.tsx
+// (garis tepi kartu 2px x 2 = 4; Poppins memakai tinggi baris "normal" = 1.5 x ukuran font).
+// Hasilnya PERKIRAAN: bila pops masih terlalu dekat/jauh dari kartu, setel angka di sini.
 export const estBlockH = (b: Item): number => {
   const n = (a?: unknown[], max = 4) => Math.min(max, (a || []).length);
   switch (b.type) {
-    case "image": return b.frame === false ? (b.h || 760) + (b.caption ? 50 : 0) : (b.h || 640) + 28 + (b.caption ? 50 : 0);
-    case "callout": return 96 + 77 + (b.sub ? 68 : 0) + (b.cta ? 80 : 0);
-    case "window": return 118 + n(b.rows) * 72 + 16 * Math.max(0, n(b.rows) - 1);
-    case "list": return 124 + n(b.items) * 90 + (b.cta ? 80 : 0);
-    case "stat": return 340;
-    case "chip": return 120;
-    case "tiles": return n(b.cols) <= 2 ? 100 : 218;
-    case "kpi": return b.big ? 260 : 140;
-    case "notifs": return n(b.notifs) * 84 + 12 * Math.max(0, n(b.notifs) - 1);
-    case "meter": return 160;
-    case "bars": return 480;
-    case "terminal": return (b.h || 420) + 110;
-    case "browser": return (b.h || 380) + 120;
-    case "phone": return b.h || 820;
-    case "compare": return 330;
-    case "tree": return 230;
-    case "dialog": return 520;
-    case "files": return (b.title ? 50 : 0) + 280;
-    case "icons": return 330;
-    case "profile": return 230;
-    case "brand": return 380;
+    case "image": return b.frame === false ? (b.h || 760) + (b.caption ? 50 : 0) : 4 + 28 + (b.h || 640) + (b.caption ? 60 : 0);
+    case "callout": return 4 + 96 + wl(b.title, 64, 0.62, 876) * 77 + (b.sub ? 12 + wl(b.sub, 40, 0.56, 876) * 50 + 28 : 0) + (b.cta ? 80 : 0);
+    case "window": {
+      const rows = (b.rows || []).slice(0, 4);
+      return 4 + 74 + 48 + rows.reduce((a, r) => a + rowH(r), 0) + 16 * Math.max(0, rows.length - 1);
+    }
+    case "list": {
+      const k = (b.items || []).length;
+      return 4 + 87 + 44 + k * 76 + 14 * Math.max(0, k - 1 + (b.cta ? 1 : 0)) + (b.cta ? 77 : 0);
+    }
+    case "stat": return 352;
+    case "chip": return 4 + 40 + (b.sub ? 97 : 78);
+    case "tiles": {
+      const cols = n(b.cols, 4);
+      const one = 4 + 36 + ((b.cols || []).some((c) => !!c.mid) ? 76 : 62);
+      const rows = cols <= 2 ? 1 : 2;
+      return rows * one + 18 * (rows - 1);
+    }
+    case "kpi":
+      return b.big ? 244 : 4 + 40 + 46 + (b.value || (b.items && b.items.length) ? 72 : 0) + (b.pct !== undefined ? 28 : 0);
+    case "notifs": {
+      const list = (b.notifs || []).slice(0, 4);
+      return list.reduce((a, x) => a + (x.sub ? 108 : 86), 0) + 12 * Math.max(0, list.length - 1);
+    }
+    case "meter": return 143 + (b.label ? 57 : 0);
+    case "bars": return 4 + 44 + (b.title ? 61 : 0) + 360 + 49;
+    case "terminal": return (b.h || 420) + 121;
+    case "browser": return (b.h || 380) + 144;
+    case "phone": return (b.h || 820) + 24;
+    case "compare": {
+      const m = Math.max(1, (b.left?.items || []).length, (b.right?.items || []).length);
+      return 4 + 77 + 44 + 73 * m + 14 * (m - 1);
+    }
+    case "tree": {
+      const cols = b.cols || [];
+      return 74 + (cols.some((c) => !!c.mid) ? 102 : 0) + (cols.some((c) => !!c.low) ? 103 : 0);
+    }
+    case "dialog": return 440;
+    case "files": {
+      const grid = Math.ceil((b.n || 24) / 8);
+      return 4 + 48 + (b.title ? 56 : 0) + (b.groups && b.groups.length ? 113 : grid * 55 + 10 * (grid - 1));
+    }
+    case "icons": return (b.icons || []).length > 1 ? 300 : 350;
+    case "profile": return 4 + 56 + 120 + (b.cta ? 108 : 0);
+    case "brand": return 320 + (b.cta ? 106 : 0);
     default: return 300;
   }
 };
 
-// Y default (puncak) untuk pops pada satu adegan.
-//   - adegan bergambar     : pops di dekat pojok atas gambar (seperti sebelumnya)
-//   - adegan kartu         : pops di BAWAH kartu bila muat di atas caption tema
-//   - bila tidak muat      : pops jadi "stiker" di atas tepi atas kartu, tidak menutupi teks
-export const popDefaultY = (stage: Item[], theme: ThemeName, hasMascot: boolean, shift: number, popCount: number): number => {
-  const L = LAYOUT[theme];
-  const top = (hasMascot ? L.stageTopM : L.stageTop) + shift;
-  const bottom = 1920 - (hasMascot ? L.stageBottomM : L.stageBottom);
-  const gap = L.stageGap;
+// Y default (puncak) untuk pops pada satu adegan, dipakai bila pop tidak punya "y" di JSON.
+//   - adegan bergambar : pops di dekat pojok atas gambar
+//   - adegan kartu     : pops di BAWAH kartu bila muat di atas caption tema
+//   - tidak muat       : pops jadi "stiker" di atas tepi atas kartu (tidak menutupi teks)
+export const popDefaultY = (stage: Item[], theme: ThemeName, geo: StageGeo, popCount: number): number => {
+  const top = geo.top;
+  const bottom = 1920 - geo.bottomGap;
+  const gap = LAYOUT[theme].stageGap;
   const hs = stage.map(estBlockH);
   const total = hs.reduce((a, b) => a + b, 0) + gap * Math.max(0, hs.length - 1);
-  const start = L.stageAlign === "center" ? top + (bottom - top - total) / 2 : top;
+  const start = geo.align === "center" ? top + (bottom - top - total) / 2 : top;
 
   const imgI = stage.findIndex((b) => b.type === "image");
   if (imgI >= 0) {
