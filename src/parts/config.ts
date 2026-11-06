@@ -232,7 +232,10 @@ const rowH = (r: Row): number => {
 export const estBlockH = (b: Item): number => {
   const n = (a?: unknown[], max = 4) => Math.min(max, (a || []).length);
   switch (b.type) {
-    case "image": return b.frame === false ? (b.h || 760) + (b.caption ? 50 : 0) : 4 + 28 + (b.h || 640) + (b.caption ? 60 : 0);
+    case "image": {
+      const k = b.shrink && b.shrink > 0 && b.shrink < 1 ? b.shrink : 1;
+      return b.frame === false ? Math.round((b.h || 760) * k) + (b.caption ? 50 : 0) : 4 + 28 + Math.round((b.h || 640) * k) + (b.caption ? 60 : 0);
+    }
     case "callout": return 4 + 96 + wl(b.title, 64, 0.62, 876) * 77 + (b.sub ? 12 + wl(b.sub, 40, 0.56, 876) * 50 + 28 : 0) + (b.cta ? 80 : 0);
     case "window": {
       const rows = (b.rows || []).slice(0, 4);
@@ -279,6 +282,33 @@ export const estBlockH = (b: Item): number => {
     case "brand": return 320 + (b.cta ? 106 : 0);
     default: return 300;
   }
+};
+
+// ---- ADEGAN BERMASKOT (gambar di atas, maskot di bawah) ----
+// Gambar dikecilkan seragam (lebar & tinggi, rasio tetap) bila ruang stage tidak cukup. Skala 0.6 - 1.0.
+export const withImageShrink = (stage: Item[], theme: ThemeName, geo: StageGeo): Item[] => {
+  const i = stage.findIndex((b) => b.type === "image");
+  if (i < 0) return stage;
+  const b = stage[i];
+  const framed = b.frame !== false;
+  const gap = LAYOUT[theme].stageGap;
+  const avail = 1920 - geo.bottomGap - geo.top - 20; // sisakan 20px
+  const others = stage.reduce((a, x, j) => (j === i ? a : a + estBlockH(x) + gap), 0);
+  const fixed = (framed ? 32 : 0) + (b.caption ? (framed ? 60 : 50) : 0);
+  const h = b.h || (framed ? 640 : 760);
+  const k = Math.max(0.6, Math.min(1, (avail - others - fixed) / h));
+  if (k >= 0.995) return stage;
+  return stage.map((x, j) => (j === i ? { ...x, shrink: Math.round(k * 1000) / 1000 } : x));
+};
+
+// Posisi pops di baris maskot: sisi SEBERANG maskot, setinggi bahu maskot (lantai - 330 x skala maskot).
+// Hanya 2 pops pertama memakai slot ini; sisanya jatuh ke posisi default (pojok gambar).
+export type PopSlot = { x: number; y: number };
+export const mascotPopSlots = (theme: ThemeName, side?: "left" | "center" | "right"): PopSlot[] => {
+  const L = LAYOUT[theme];
+  const y = Math.round(L.feet - 330 * L.mScale);
+  const xs = side === "right" ? [380, 150] : side === "center" ? [200, 880] : [700, 930];
+  return xs.map((x) => ({ x, y }));
 };
 
 // Y default (puncak) untuk pops pada satu adegan, dipakai bila pop tidak punya "y" di JSON.
