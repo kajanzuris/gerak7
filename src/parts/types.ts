@@ -58,6 +58,7 @@ export type Item = {
   label?: string;
   n?: number;
   groups?: string[];
+  shrink?: number; // internal (diisi renderer): skala 0.6-1 untuk gambar yang dikecilkan saat adegan bermaskot
 };
 
 // Objek pelengkap yang muncul dengan gerakan saat kata tertentu (lihat parts/overlays.tsx)
