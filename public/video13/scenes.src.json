@@ -1,0 +1,234 @@
+{
+  "style": "explainer",
+  "scenes": [
+    {
+      "title": "Aku *perhatiin* *kebanyakan* orang tuh sering salah fokus pas mau mulai",
+      "start": 0,
+      "small": 1,
+      "pose": "point",
+      "mascot": "left",
+      "stage": [
+        {
+          "type": "image",
+          "src": "img/img01.png",
+          "h": 960
+        }
+      ],
+      "pops": [
+        {
+          "word": "salah",
+          "glyph": "❌",
+          "anim": "pop",
+          "s": 0.9,
+          "object": "a red cross mark",
+          "img": "pics/pop01.png"
+        },
+        {
+          "word": "mulai",
+          "glyph": "🚀",
+          "anim": "slide-right",
+          "s": 0.95,
+          "object": "a rocket flying upward",
+          "img": "pics/pop02.png"
+        }
+      ]
+    },
+    {
+      "title": "*jualan,* *malah* mikirin modal terus.",
+      "start": 4.3,
+      "small": 0,
+      "pose": "explain",
+      "mascot": "left",
+      "stage": [
+        {
+          "type": "image",
+          "src": "img/img02.png",
+          "h": 960
+        }
+      ],
+      "pops": [
+        {
+          "word": "jualan",
+          "glyph": "🛒",
+          "anim": "pop",
+          "s": 0.85,
+          "object": "a shopping cart",
+          "img": "pics/pop03.png"
+        },
+        {
+          "word": "modal",
+          "glyph": "💵",
+          "anim": "drop",
+          "s": 0.9,
+          "object": "a stack of banknotes",
+          "img": "pics/pop04.png"
+        }
+      ]
+    },
+    {
+      "title": "Coba deh kamu *mulai* aja dari apa yang kamu *punya* sekarang.",
+      "start": 6.7,
+      "small": 1,
+      "stage": [
+        {
+          "type": "window",
+          "title": "Rencana",
+          "tone": "#1f9d8a",
+          "rows": [
+            {
+              "k": "check",
+              "state": "done",
+              "text": "Coba deh kamu"
+            },
+            {
+              "k": "check",
+              "state": "todo",
+              "text": "mulai aja dari"
+            }
+          ]
+        }
+      ],
+      "pops": [
+        {
+          "word": "mulai",
+          "glyph": "🚀",
+          "anim": "slide-right",
+          "x": 930,
+          "s": 0.95,
+          "object": "a rocket flying upward",
+          "img": "pics/pop02.png"
+        }
+      ]
+    },
+    {
+      "title": "*Terus* ya, nggak *usah* nunggu sampai sempurna,",
+      "start": 10.6,
+      "small": 1,
+      "pose": "cheer",
+      "mascot": "left",
+      "stage": [
+        {
+          "type": "image",
+          "src": "img/img03.png",
+          "h": 960
+        }
+      ]
+    },
+    {
+      "title": "*posting* aja *dulu* biar kamu dapet feedback.",
+      "start": 13.6,
+      "small": 1,
+      "pose": "thumbs",
+      "mascot": "left",
+      "stage": [],
+      "pops": [
+        {
+          "word": "posting",
+          "glyph": "📲",
+          "anim": "pop",
+          "s": 0.75,
+          "object": "a smartphone with a notification bubble",
+          "img": "pics/pop05.png"
+        }
+      ]
+    },
+    {
+      "title": "Nah, yang *paling* *penting* itu fokus buat bantu orang,",
+      "start": 16.5,
+      "small": 1,
+      "pose": "point",
+      "mascot": "left",
+      "stage": [
+        {
+          "type": "image",
+          "src": "img/img04.png",
+          "h": 960
+        }
+      ]
+    },
+    {
+      "title": "bukan *cuma* *cari* untung doang.",
+      "start": 19.9,
+      "small": 0,
+      "pose": "explain",
+      "mascot": "left",
+      "stage": [
+        {
+          "type": "compare",
+          "left": {
+            "title": "Dulu",
+            "tone": "#3b6fd8",
+            "items": [
+              "Bicara"
+            ]
+          },
+          "right": {
+            "title": "Sekarang",
+            "tone": "#1f9d8a",
+            "items": [
+              "Mendengar"
+            ]
+          }
+        }
+      ],
+      "pops": [
+        {
+          "word": "untung",
+          "glyph": "💰",
+          "anim": "drop",
+          "s": 0.95,
+          "object": "a bag of money with gold coins",
+          "img": "pics/pop06.png"
+        }
+      ]
+    },
+    {
+      "title": "*Nanti* *jualan* kamu bakal kerasa lebih ringan dan asik kok.",
+      "start": 22,
+      "small": 1,
+      "pose": "think",
+      "mascot": "left",
+      "stage": [
+        {
+          "type": "image",
+          "src": "img/img05.png",
+          "h": 960
+        }
+      ]
+    },
+    {
+      "title": "*Simpan* ya *pesan* aku ini biar kamu nggak ragu-ragu lagi.",
+      "start": 25.8,
+      "small": 1,
+      "pose": "cheer",
+      "mascot": "left",
+      "stage": []
+    }
+  ],
+  "header": false,
+  "accent": "#22d3ee",
+  "char": "robot",
+  "charColor": "#222222",
+  "cta": "Link-nya di bio",
+  "charStyle": "block",
+  "transitions": [
+    "fade",
+    "slide-left",
+    "zoom"
+  ],
+  "transitionsMode": "random",
+  "backgrounds": [
+    "cream",
+    "sky",
+    "sunset",
+    "navy"
+  ],
+  "bgMode": "auto",
+  "bgEvery": 1,
+  "theme": "hud",
+  "audio": {
+    "music": true,
+    "sfx": true,
+    "blockSfx": true
+  }
+}
