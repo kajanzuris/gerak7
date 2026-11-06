@@ -262,11 +262,12 @@ export const ImageView: React.FC<{ b: Item; t0: number }> = ({ b, t0 }) => {
   const { t, name, mute: pageMute } = React.useContext(Ctx);
   const still = b.fit === "contain" || b.hold; // screenshot / gambar yang bertahan antar adegan: jangan di-zoom
   const zoom = still ? 1 : 1 + 0.06 * clamp01((t - t0) / 6); // zoom pelan supaya gambar diam tidak terasa mati
+  const k = b.shrink && b.shrink > 0 && b.shrink < 1 ? b.shrink : 1; // dikecilkan saat adegan bermaskot (diisi Explainer)
   if (b.frame === false) {
     // gambar transparan (produk/karakter): tanpa kartu, utuh (contain), melayang pelan + bayangan
     return (
       <Appear t0={t0}>
-        <div style={{ height: b.h || 760, display: "flex", alignItems: "center", justifyContent: "center" }}>
+        <div style={{ height: Math.round((b.h || 760) * k), display: "flex", alignItems: "center", justifyContent: "center" }}>
           {b.src ? (
             <Img src={staticFile(`${name}/${b.src}`)} style={{ maxWidth: "100%", height: "100%", objectFit: "contain", filter: "drop-shadow(0 18px 24px rgba(0,0,0,.25))", transform: `translateY(${Math.sin(t * 2) * 8}px)` }} />
           ) : null}
@@ -281,8 +282,8 @@ export const ImageView: React.FC<{ b: Item; t0: number }> = ({ b, t0 }) => {
   }
   return (
     <Appear t0={t0}>
-      <div style={{ ...card, padding: 14 }}>
-        <div style={{ height: b.h || 640, borderRadius: 22, overflow: "hidden", background: V.soft }}>
+      <div style={{ ...card, padding: 14, ...(k < 1 ? { width: `${Math.round(k * 1000) / 10}%`, margin: "0 auto" } : {}) }}>
+        <div style={{ height: Math.round((b.h || 640) * k), borderRadius: 22, overflow: "hidden", background: V.soft }}>
           {b.src ? <Img src={staticFile(`${name}/${b.src}`)} style={{ width: "100%", height: "100%", objectFit: b.fit === "contain" ? "contain" : "cover", transform: `scale(${zoom})` }} /> : null}
         </div>
         {b.caption ? (
