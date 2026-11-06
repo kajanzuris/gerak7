@@ -3,7 +3,7 @@
 // blocks (tampilan tiap blok), themes (judul/caption/latar per tema), mascots, scenery.
 import { AbsoluteFill, Audio, spring, staticFile, useCurrentFrame, useVideoConfig } from "remotion";
 import React from "react";
-import { BG_PRESETS, C, CAP_LIFT, CLASSIC_BGS, CLASSIC_PROPS, FONT, HUD_CYAN, HUD_VARS, LAYOUT, NEON_VARS, TD, TRANS, TUT_VARS, bgStyle, classicVars, easeIO, popDefaultY, stageGeo, transPair } from "./parts/config";
+import { BG_PRESETS, C, CAP_LIFT, CLASSIC_BGS, CLASSIC_PROPS, FONT, HUD_CYAN, HUD_VARS, LAYOUT, NEON_VARS, TD, TRANS, TUT_VARS, bgStyle, classicVars, easeIO, mascotPopSlots, popDefaultY, stageGeo, transPair, withImageShrink } from "./parts/config";
 import type { ThemeName } from "./parts/config";
 import { Bg, Prop } from "./parts/scenery";
 import { Block, HoloRing, OrbMascot, SpriteMascot, Stick } from "./parts/mascots";
@@ -119,6 +119,10 @@ export const Explainer: React.FC<StoryProps> = ({ name, data: d }) => {
     const lift = (hud || tut) && textMode === "caption" && !solo ? (CAP_LIFT[themeName] ?? 0) : 0; // judul hilang: stage naik
     const centerCards = neon && !hm && !solo && !hasImg && !orbFor(i).big; // neon: kartu di tengah ruang kosong
     const geo = stageGeo(themeName, { mascot: hm, shift: L.shiftWhenNoHeader ? dy : 0, lift, centerCards });
+    // adegan bermaskot: gambar dikecilkan bila ruang stage kurang; pops ke baris maskot (sisi seberang maskot)
+    const mOn = hm && data.char !== "plain";
+    const stageEff = hm ? withImageShrink(s.stage || [], themeName, geo) : s.stage || [];
+    const slots = mOn ? mascotPopSlots(themeName, s.mascot) : undefined;
     return (
       <Ctx.Provider key={"L" + i} value={{ ws: wsI, base: s.start, t, accent, name, ink: data.textColor || (hud || neon ? "#ffffff" : tut ? "#1a0e08" : p.ink), mute: data.textColor || (hud ? "#9fb3d1" : classic ? "#c4c9d8" : neon ? "#b9a8c9" : tut ? "#5a2a14" : p.mute), theme: themeName, hl: tut ? "#ffffff" : undefined }}>
         <div style={{ position: "absolute", left: 0, top: 0, width: 1080, height: 1920, ...wrap }}>
@@ -131,12 +135,13 @@ export const Explainer: React.FC<StoryProps> = ({ name, data: d }) => {
             <Prop kind={s.prop} f={frame} lf={Math.max(0, frame - Math.round(s.start * fps))} hx={s.mascot === "left" ? 300 : s.mascot === "right" ? 780 : 540} accent={accent} />
           ) : null}
           <div style={{ position: "absolute", left: 60, right: 60, top: geo.top, bottom: geo.bottomGap, display: "flex", flexDirection: "column", justifyContent: geo.align, gap: L.stageGap }}>
-            {(s.stage || []).map((b, bi) => <StageItem key={bi} b={b} i={bi} />)}
+            {stageEff.map((b, bi) => <StageItem key={bi} b={b} i={bi} />)}
           </div>
           {s.pops && s.pops.length ? (
             <PopLayer
               pops={s.pops}
-              defaultY={popDefaultY(s.stage || [], themeName, geo, s.pops.length)}
+              defaultY={popDefaultY(stageEff, themeName, geo, Math.max(1, s.pops.length - (slots ? slots.length : 0)))}
+              slots={slots}
             />
           ) : null}
         </div>
@@ -203,7 +208,16 @@ export const Explainer: React.FC<StoryProps> = ({ name, data: d }) => {
       {neon && orbVis > 0.01 ? <OrbMascot x={540} y={orbY} s={orbS} f={frame} talk={talk ?? 0} op={orbVis} /> : null}
       {tut && sc.step && data.header !== false ? <StepBadge step={sc.step} label={data.stepLabel || "Langkah"} t0={stepStart} /> : null}
       {hud && showCaption ? <HudCaption words={data.words || []} t={t} accent={accent} /> : null}
-      {tut && showCaption ? <TutCaption words={data.words || []} t={t} /> : null}
+      {tut && showCaption ? (
+        // adegan bermaskot: caption naik agar tidak menimpa kepala maskot (kepala maskot mulai sekitar y=1460)
+        hasMascot ? (
+          <div style={{ position: "absolute", left: 0, top: 0, width: 1080, height: 1920, transform: "translateY(-210px)" }}>
+            <TutCaption words={data.words || []} t={t} />
+          </div>
+        ) : (
+          <TutCaption words={data.words || []} t={t} />
+        )
+      ) : null}
       {neon ? <NeonCaption words={data.words || []} t={t} accent={accent} /> : null}
       {tut && data.handle && data.header !== false ? <HandleTag text={data.handle} /> : null}
       {classic ? <ClassicCaption words={data.words || []} t={t} accent={accent} /> : null}
