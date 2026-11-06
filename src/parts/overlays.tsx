@@ -4,9 +4,12 @@
 //   { "word": "uang",   "glyph": "💰", "anim": "drop" }
 // word  = kata dari title yang memicu kemunculan (tanpa word: 0,3 dtk setelah adegan mulai). at = detik sejak adegan mulai.
 // img   = file di public/<video>/ (nama harus persis);  glyph = emoji/teks besar tanpa file.
-// x,y   = titik tengah di layar 1080x1920 (kosong = sudut atas area gambar, bergantian kanan/kiri);  s = skala (1 = 260px).
+// x,y   = titik tengah di layar 1080x1920 (kosong = ikut slot maskot bila ada, atau sudut atas area gambar bergantian kanan/kiri);  s = skala (1 = 260px).
 // anim  = pop (membesar, bawaan) | drop (jatuh) | slide-left | slide-right | spin. Setelah muncul, objek melayang pelan.
 // dur   = lama objek terlihat (detik, bawaan 2,2) sebelum mengecil dan hilang, supaya banyak pops tidak menumpuk di layar.
+//
+// slots = (opsional, dari Explainer) posisi di baris maskot, mis. di sisi seberang maskot. Pop ke-1 dan ke-2 yang TIDAK punya x/y
+// memakai slot itu; pop lain memakai posisi default. x/y yang ditulis di JSON selalu menang.
 import React from "react";
 import { Img, spring, staticFile, useCurrentFrame, useVideoConfig } from "remotion";
 import { Ctx, norm, clamp01 } from "./ui";
@@ -25,7 +28,9 @@ const LIFE = 2.2; // detik terlihat (bawaan)
 const EXIT = 0.3; // detik animasi mengecil saat hilang
 const SLOTS_X = [830, 250]; // posisi bawaan: kanan lalu kiri
 
-export const PopLayer: React.FC<{ pops: Pop[]; defaultY: number }> = ({ pops, defaultY }) => {
+export type PopSlotXY = { x: number; y: number };
+
+export const PopLayer: React.FC<{ pops: Pop[]; defaultY: number; slots?: PopSlotXY[] }> = ({ pops, defaultY, slots }) => {
   const frame = useCurrentFrame();
   const { fps } = useVideoConfig();
   const cx = React.useContext(Ctx);
@@ -41,8 +46,9 @@ export const PopLayer: React.FC<{ pops: Pop[]; defaultY: number }> = ({ pops, de
         const sp = spring({ frame: lf, fps, config: { damping: 10, stiffness: 120 } });
         const inv = 1 - sp;
         const size = SIZE * (p.s ?? 1);
-        const cxp = p.x ?? SLOTS_X[i % 2];
-        const cyp = p.y ?? defaultY + Math.floor(i / 2) * (SIZE + 20) + size / 2;
+        const slot = slots && i < slots.length && p.x === undefined && p.y === undefined ? slots[i] : undefined;
+        const cxp = p.x ?? slot?.x ?? SLOTS_X[i % 2];
+        const cyp = p.y ?? slot?.y ?? defaultY + Math.floor(i / 2) * (SIZE + 20) + size / 2;
         const bob = Math.sin((frame + i * 13) / 14) * 10; // melayang pelan
         const anim = p.anim || "pop";
         const dx = anim === "slide-left" ? -inv * 600 : anim === "slide-right" ? inv * 600 : 0;
