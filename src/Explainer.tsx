@@ -11,6 +11,7 @@ import { ClassicCaption, HandleTag, Header, Headline, HudBackdrop, HudCaption, H
 import { Ctx, clamp01, fallbackWords } from "./parts/ui";
 import { StageItem } from "./parts/blocks";
 import { PopLayer } from "./parts/overlays";
+import { DynamicStory } from "./parts/dynamic";
 import type { Data } from "./parts/types";
 import type { Pose } from "./parts/mascots";
 import type { Preset } from "./parts/config";
@@ -21,6 +22,7 @@ export const Explainer: React.FC<StoryProps> = ({ name, data: d }) => {
   const { fps, durationInFrames } = useVideoConfig();
   if (!d) return null;
   const data = d as unknown as Data;
+  if (data.theme === "dynamic") return <DynamicStory name={name} data={data} />; // tema dinamis: renderer terpisah (parts/dynamic.tsx)
   const t = frame / fps;
   const hud = data.theme === "hud";
   const classic = data.theme === "classic";
