@@ -63,11 +63,20 @@ export type Item = {
 
 // Objek pelengkap yang muncul dengan gerakan saat kata tertentu (lihat parts/overlays.tsx)
 export type Pop = { word?: string; at?: number; img?: string; glyph?: string; x?: number; y?: number; s?: number; dur?: number; anim?: "pop" | "drop" | "slide-left" | "slide-right" | "spin" };
-export type Scene = { title: string; start: number; small?: number; pose?: string; mascot?: "left" | "center" | "right"; stage?: Item[]; transition?: string; bg?: string; label?: string; prop?: string; step?: string; orb?: "big" | "small" | "hide"; pops?: Pop[] };
+export type Scene = { title: string; start: number; small?: number; pose?: string; mascot?: "left" | "center" | "right"; stage?: Item[]; transition?: string; bg?: string; label?: string; prop?: string; step?: string; orb?: "big" | "small" | "hide"; pops?: Pop[];
+  // tema "dynamic" (src/parts/dynamic.tsx):
+  punch?: string; // 1-3 kata raksasa berbingkai ("SALAH FOKUS")
+  punchWord?: string; // kata dari title yang memicu munculnya teks punch (kosong = awal adegan)
+  punchAt?: "top" | "mid" | "low"; // posisi vertikal teks punch
+  look?: "peach" | "violet" | "teal" | "sand" | "night"; // latar adegan tanpa foto (gradasi + cincin radar)
+  fx?: "confetti"; // hujan konfeti
+  sweep?: boolean; // sapuan warna aksen saat adegan dimulai
+  collage?: string[]; // adegan penutup: 3-5 gambar (src) disusun miring seperti kolase
+};
 
 export type Data = {
   durationInFrames: number;
-  theme?: "clean" | "hud" | "classic" | "tutorial" | "neon";
+  theme?: "clean" | "hud" | "classic" | "tutorial" | "neon" | "dynamic";
   textMode?: "headline" | "caption" | "both"; // hud/tutorial: judul besar di atas, caption di bawah, atau keduanya (bawaan: caption)
   brand?: string;
   tag?: string;
@@ -87,6 +96,7 @@ export type Data = {
   bgMode?: "single" | "auto";
   bgEvery?: number;
   cta?: string;
+  showCta?: boolean; // false = tombol ajakan (CTA) tidak ditampilkan
   words?: W[];
   env?: number[];
   scenes: Scene[];
