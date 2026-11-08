@@ -115,9 +115,8 @@ for i, s in enumerate(sc):
     if i and isinstance(s.get('start'), (int, float)) and isinstance(sc[i - 1].get('start'), (int, float)):
         if s['start'] <= sc[i - 1]['start']: err.append(f'adegan {i}: start harus naik terus')
         elif s['start'] - sc[i - 1]['start'] < 1.0: warn.append(f'adegan {i}: jarak start < 1 dtk (prepare.py akan memaksa min 0.8 dtk)')
-
 if EX:
-        if d.get('theme') not in (None, 'clean', 'hud', 'classic', 'tutorial', 'neon', 'dynamic'): err.append(f"theme '{d.get('theme')}' tidak dikenal (clean / hud / classic / tutorial / neon / dynamic)")
+    if d.get('theme') not in (None, 'clean', 'hud', 'classic', 'tutorial', 'neon', 'dynamic'): err.append(f"theme '{d.get('theme')}' tidak dikenal (clean / hud / classic / tutorial / neon / dynamic)")
     if d.get('charStyle') == 'sprite':
         for k in ('charImg', 'charTalkImg'):
             if d.get(k) and not os.path.exists(f'{D}/{d[k]}'): err.append(f"file karakter '{d[k]}' belum ada di {D}/ (upload PNG transparan ke folder itu)")
