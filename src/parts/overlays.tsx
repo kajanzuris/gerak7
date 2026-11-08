@@ -6,6 +6,7 @@
 // img   = file di public/<video>/ (nama harus persis);  glyph = emoji/teks besar tanpa file.
 // x,y   = titik tengah di layar 1080x1920 (kosong = ikut slot maskot bila ada, atau sudut atas area gambar bergantian kanan/kiri);  s = skala (1 = 260px).
 // anim  = pop (membesar, bawaan) | drop (jatuh) | slide-left | slide-right | spin. Setelah muncul, objek melayang pelan.
+// (prop "scale" dari renderer menggandakan ukuran semua pops di adegan itu)
 // dur   = lama objek terlihat (detik, bawaan 2,2) sebelum mengecil dan hilang, supaya banyak pops tidak menumpuk di layar.
 //
 // slots = (opsional, dari Explainer) posisi di baris maskot, mis. di sisi seberang maskot. Pop ke-1 dan ke-2 yang TIDAK punya x/y
@@ -30,7 +31,7 @@ const SLOTS_X = [830, 250]; // posisi bawaan: kanan lalu kiri
 
 export type PopSlotXY = { x: number; y: number };
 
-export const PopLayer: React.FC<{ pops: Pop[]; defaultY: number; slots?: PopSlotXY[] }> = ({ pops, defaultY, slots }) => {
+export const PopLayer: React.FC<{ pops: Pop[]; defaultY: number; slots?: PopSlotXY[]; scale?: number }> = ({ pops, defaultY, slots, scale }) => {
   const frame = useCurrentFrame();
   const { fps } = useVideoConfig();
   const cx = React.useContext(Ctx);
@@ -45,7 +46,7 @@ export const PopLayer: React.FC<{ pops: Pop[]; defaultY: number; slots?: PopSlot
         const out = clamp01((lf - life) / (EXIT * fps)); // 0 = tampil, 1 = hilang
         const sp = spring({ frame: lf, fps, config: { damping: 10, stiffness: 120 } });
         const inv = 1 - sp;
-        const size = SIZE * (p.s ?? 1);
+        const size = SIZE * (p.s ?? 1) * (scale ?? 1); // scale: pengali ukuran (tema dinamis memakai pops besar)
         const slot = slots && i < slots.length && p.x === undefined && p.y === undefined ? slots[i] : undefined;
         const cxp = p.x ?? slot?.x ?? SLOTS_X[i % 2];
         const cyp = p.y ?? slot?.y ?? defaultY + Math.floor(i / 2) * (SIZE + 20) + size / 2;
