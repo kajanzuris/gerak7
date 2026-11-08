@@ -1,0 +1,184 @@
+{
+  "style": "explainer",
+  "scenes": [
+    {
+      "title": "*Kalau* kamu masih *kepikiran* omongan tetangga pas mau mulai jualan,",
+      "start": 0,
+      "small": 1,
+      "stage": [
+        {
+          "type": "image",
+          "src": "img/img01.png",
+          "h": 960,
+          "frame": false
+        }
+      ],
+      "pops": [
+        {
+          "word": "mulai",
+          "glyph": "🚀",
+          "anim": "slide-right",
+          "s": 0.95,
+          "object": "a rocket flying upward",
+          "img": "pics/pop01.png"
+        }
+      ],
+      "punch": "KALAU",
+      "punchWord": "Kalau",
+      "punchAt": "low"
+    },
+    {
+      "title": "coba *berhenti* *dulu* deh mikirin itu.",
+      "start": 4.2,
+      "small": 1,
+      "stage": [
+        {
+          "type": "image",
+          "src": "img/img02.png",
+          "h": 960,
+          "frame": false
+        }
+      ]
+    },
+    {
+      "title": "*Mending* kamu *fokus* aja ke satu orang yang memang butuh solusi dari",
+      "start": 6.6,
+      "small": 1,
+      "stage": [
+        {
+          "type": "image",
+          "src": "img/img03.png",
+          "h": 960,
+          "frame": false
+        }
+      ],
+      "pops": [
+        {
+          "word": "solusi",
+          "glyph": "💡",
+          "anim": "pop",
+          "s": 0.75,
+          "object": "a glowing light bulb",
+          "img": "pics/pop02.png"
+        }
+      ]
+    },
+    {
+      "title": "kamu. *Terus,* coba *tawarin* lewat WhatsApp ke teman dekat kamu dulu ya.",
+      "start": 10.7,
+      "small": 1,
+      "stage": [
+        {
+          "type": "image",
+          "src": "img/img04.png",
+          "h": 960,
+          "frame": false
+        }
+      ],
+      "pops": [
+        {
+          "word": "teman",
+          "glyph": "🤝",
+          "anim": "pop",
+          "s": 0.9,
+          "object": "two hands shaking",
+          "img": "pics/pop03.png"
+        }
+      ],
+      "punch": "TERUS",
+      "punchWord": "Terus",
+      "punchAt": "top"
+    },
+    {
+      "title": "*Pakai* *bahasa* yang jujur aja biar nggak kerasa kaku.",
+      "start": 15.5,
+      "small": 1,
+      "stage": [],
+      "look": "peach",
+      "sweep": true,
+      "pops": [
+        {
+          "word": "bahasa",
+          "glyph": "⭐",
+          "anim": "pop",
+          "object": "a shiny star",
+          "img": "pics/pop04.png"
+        }
+      ]
+    },
+    {
+      "title": "*Nanti* kamu *bakal* kaget lho,",
+      "start": 18.9,
+      "small": 0,
+      "stage": [
+        {
+          "type": "image",
+          "src": "img/img05.png",
+          "h": 960,
+          "frame": false
+        }
+      ]
+    },
+    {
+      "title": "*ternyata* *jualan* itu sesimpel bantu orang lain.",
+      "start": 20.7,
+      "small": 1,
+      "stage": [
+        {
+          "type": "image",
+          "src": "img/img06.png",
+          "h": 960,
+          "frame": false
+        }
+      ],
+      "pops": [
+        {
+          "word": "jualan",
+          "glyph": "🛒",
+          "anim": "pop",
+          "s": 0.85,
+          "object": "a shopping cart",
+          "img": "pics/pop05.png"
+        }
+      ],
+      "punch": "TERNYATA",
+      "punchWord": "ternyata",
+      "punchAt": "low"
+    },
+    {
+      "title": "*Simpan* *video* ini ya biar kamu nggak ragu lagi.",
+      "start": 23.8,
+      "small": 1,
+      "stage": [],
+      "look": "teal",
+      "sweep": true,
+      "collage": [
+        "img/img01.png",
+        "img/img02.png",
+        "img/img03.png",
+        "img/img04.png",
+        "img/img05.png"
+      ]
+    }
+  ],
+  "header": false,
+  "accent": "#22d3ee",
+  "charColor": "#222222",
+  "showCta": false,
+  "charStyle": "block",
+  "transitions": [
+    "fade"
+  ],
+  "transitionsMode": "random",
+  "backgrounds": [
+    "cream"
+  ],
+  "bgMode": "single",
+  "bgEvery": 3,
+  "theme": "dynamic",
+  "audio": {
+    "music": true,
+    "sfx": true,
+    "blockSfx": true
+  }
+}
